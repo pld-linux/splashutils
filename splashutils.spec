@@ -24,11 +24,11 @@ Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
+BuildRequires:	glibc-static
 BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
-BuildRequires:	zlib-static
-BuildRequires:	glibc-static
 BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
+BuildRequires:	zlib-static
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -48,15 +48,16 @@ rm -rf libs
 install -d linux/include
 %{__make} splash_kern splash_user
 %{__make} -C miscsplashutils-%{_misc_ver} \
-        CFLAGS="%{rpmcflags} -I/usr/include/freetype2" \
+	CFLAGS="%{rpmcflags} -I/usr/include/freetype2" \
 	LIBDIR="%{_libdir}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/%{_sysconfdir}/{splash,rc.d/init.d,sysconfig}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig}
+
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-install miscsplashutils-%{_misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT/%{_bindir}
+install miscsplashutils-%{_misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT%{_bindir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/fbsplash
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/fbsplash
 
@@ -78,5 +79,5 @@ fi
 %dir %{_sysconfdir}/splash
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
-%attr(644,root,root) %config(noreplace) %verify(not md5 size mtime) /etc/sysconfig/fbsplash
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/fbsplash
 %attr(754,root,root) /etc/rc.d/init.d/fbsplash
