@@ -1,12 +1,10 @@
 #
 # TODO
-#	- use static packages from distro, not included ones
 #	- find a way to make it work on startup (not initrd imo, at kernel
 #		time - initramfs) + maybe some init.d
 #	- check initramfs (upgrade geninitrd maybe), cause splashutils can
 #		make use of it
-#	- better way to use kernel-headers (maybe patch glibc-kernel-headers
-#		and use them instead)
+#	- use dietlibc
 #
 %define		_pre		pre10
 %define		_misc_ver	0.1.2
@@ -28,6 +26,7 @@ BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
 BuildRequires:	zlib-static
 BuildRequires:	glibc-static
+BuildRequires:	linux-libc-headers >= 2.6.9.1-1.5
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -41,15 +40,10 @@ Narzêdzia do ustawiania fbsplash.
 find . -name CVS | xargs rm -rf 
 %patch0 -p1
 
-rm -rf lib/jpeg*
-rm -rf lib/libpng*
-rm -rf lib/zlib*
+rm -rf libs
 
 %build
 install -d linux/include
-ln -sf %{_kernelsrcdir}/include/linux linux/include/linux
-ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} linux/include/asm
-ln -sf %{_kernelsrcdir}/include/asm-generic linux/include/asm-generic
 %{__make} splash_kern splash_user
 %{__make} -C miscsplashutils-%{_misc_ver} \
         CFLAGS="%{rpmcflags} -I/usr/include/freetype2"
