@@ -46,7 +46,8 @@ rm -rf libs
 install -d linux/include
 %{__make} splash_kern splash_user
 %{__make} -C miscsplashutils-%{_misc_ver} \
-        CFLAGS="%{rpmcflags} -I/usr/include/freetype2"
+        CFLAGS="%{rpmcflags} -I/usr/include/freetype2" \
+	LIBDIR="-L%{_libdir}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
