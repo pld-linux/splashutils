@@ -1,3 +1,13 @@
+#
+# TODO
+#	- use static packages from distro, not included ones
+#	- find a way to make it work on startup (not initrd imo, at kernel
+#		time - initramfs) + maybe some init.d
+#	- check initramfs (upgrade geninitrd maybe), cause splashutils can
+#		make use of it
+#	- better way to use kernel-headers (maybe patch glibc-kernel-headers
+#		and use them instead)
+#
 %define		_pre		pre10
 %define		_misc_ver	0.1.2
 Summary:	Utilities for setting fbsplash
