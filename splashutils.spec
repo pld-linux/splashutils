@@ -37,7 +37,7 @@ Utilities for setting fbsplash.
 Narzêdzia do ustawiania fbsplash.
 
 %prep
-%setup -q -n %{name}-%{version} -a1
+%setup -q -a1
 find . -name CVS | xargs rm -rf 
 %patch0 -p1
 
