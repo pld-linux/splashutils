@@ -37,6 +37,7 @@ Narzêdzia do ustawiania fbsplash.
 
 %prep
 %setup -q -n %{name}-%{version}-%{_pre} -a1
+find . -name CVS | xargs rm -rf 
 
 %build
 install -d linux/include
@@ -59,7 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS README 
+%doc AUTHORS README docs/*
 %dir %{_sysconfdir}/splash
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
