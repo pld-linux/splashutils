@@ -12,13 +12,15 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	0.9
-Release:	0.%{_pre}.2
+Release:	0.%{_pre}.3
 License:	GPL
 Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/current/%{name}-%{version}-%{_pre}.tar.bz2
 # Source0-md5:	20ab27ea8e02dc2efb6789cf53663ec8
 Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/miscsplashutils-%{_misc_ver}.tar.bz2
 # Source1-md5:	71f85c661c144665ff5d4a8bbef1936e
+Source2:	%{name}.init
+Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
@@ -51,13 +53,24 @@ install -d linux/include
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/%{_sysconfdir}/splash
+install -d $RPM_BUILD_ROOT/%{_sysconfdir}/{splash,rc.d/init.d,sysconfig}
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 install miscsplashutils-%{_misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT/%{_bindir}
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/fbsplash
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/fbsplash
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post
+umask 022 
+/sbin/chkconfig --add fbsplash
+
+%preun
+if [ "$1" = "0" ]; then
+	/sbin/chkconfig --del fbsplash
+fi
 
 %files
 %defattr(644,root,root,755)
@@ -65,3 +78,5 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/splash
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
+%attr(640,root,root) %config(noreplace) %verify(not md5 size mtime) /etc/sysconfig/fbsplash
+%attr(754,root,root) /etc/rc.d/init.d/fbsplash
