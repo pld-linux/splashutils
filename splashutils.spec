@@ -78,5 +78,5 @@ fi
 %dir %{_sysconfdir}/splash
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
-%attr(640,root,root) %config(noreplace) %verify(not md5 size mtime) /etc/sysconfig/fbsplash
+%attr(644,root,root) %config(noreplace) %verify(not md5 size mtime) /etc/sysconfig/fbsplash
 %attr(754,root,root) /etc/rc.d/init.d/fbsplash
