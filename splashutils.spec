@@ -6,17 +6,16 @@
 #		make use of it
 #	- use dietlibc
 #
-%define		_pre		pre10
 %define		_misc_ver	0.1.2
 Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
-Version:	0.9
-Release:	0.%{_pre}.3
+Version:	0.9.1
+Release:	1
 License:	GPL
 Group:		System
-Source0:	http://dev.gentoo.org/~spock/projects/gensplash/current/%{name}-%{version}-%{_pre}.tar.bz2
-# Source0-md5:	20ab27ea8e02dc2efb6789cf53663ec8
+Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
+# Source0-md5:	a153dae7e3c73c972a3b7ff96490649a
 Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/miscsplashutils-%{_misc_ver}.tar.bz2
 # Source1-md5:	71f85c661c144665ff5d4a8bbef1936e
 Source2:	%{name}.init
@@ -38,7 +37,7 @@ Utilities for setting fbsplash.
 Narzêdzia do ustawiania fbsplash.
 
 %prep
-%setup -q -n %{name}-%{version}-%{_pre} -a1
+%setup -q -n %{name}-%{version} -a1
 find . -name CVS | xargs rm -rf 
 %patch0 -p1
 
