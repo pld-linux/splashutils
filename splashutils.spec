@@ -3,10 +3,9 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	0.9
-Release:	%{pre}.1
-Epoch:		0
+Release:	0.%{pre}.1
 License:	GPL
-Group:		-
+Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/current/%{name}-%{version}-%{pre}.tar.bz2
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	libjpeg-static
@@ -33,6 +32,7 @@ ln -sf %{_kernelsrcdir}/include/asm-generic linux/include/asm-generic
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT/%{_sysconfdir}/splash
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
@@ -42,5 +42,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS README 
+%dir %{_sysconfdir}/splash
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
