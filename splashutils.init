@@ -28,7 +28,7 @@ case "$1" in
 	if [ ! -f /var/lock/subsys/fbsplash ]; then
 		if [ -e /dev/fbsplash ] && [ -e /proc/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
 
-			msg_starting "Setting framebuffer console images"
+			show "Setting framebuffer console images"; busy
 
 			for TTY in ${SPLASH_TTYS}; do
 
@@ -49,6 +49,8 @@ case "$1" in
 
 			done
 
+			ok
+
 			touch /var/lock/subsys/fbsplash
 		fi
 	else
@@ -57,9 +59,6 @@ case "$1" in
 	;;
 	stop)
 	if [ -f /var/lock/subsys/fbsplash ]; then
-		# Stop daemons.
-		msg_stopping fbsplash
-		#killproc fbsplash
 		rm -f /var/lock/subsys/fbsplash
 	else
 		msg_not_running fbsplash
@@ -77,6 +76,3 @@ case "$1" in
 esac
 
 exit $RETVAL
-
-# This must be last line !
-# vi:syntax=sh:tw=78:ts=8:sw=8
