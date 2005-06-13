@@ -4,26 +4,25 @@
 #		time - initramfs) + maybe some init.d
 #	- check initramfs (upgrade geninitrd maybe), cause splashutils can
 #		make use of it
-#	- use dietlibc
 #
-%define		_misc_ver	0.1.2
 Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
-Version:	0.9.1
-Release:	1
+Version:	1.1.9.6
+Release:	0.1
 License:	GPL
 Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
-# Source0-md5:	a153dae7e3c73c972a3b7ff96490649a
+# Source0-md5:	f3fa79161c32c1e76fc6847da3fada9e
+%define		_misc_ver	0.1.3
 Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/miscsplashutils-%{_misc_ver}.tar.bz2
-# Source1-md5:	71f85c661c144665ff5d4a8bbef1936e
+# Source1-md5:	f8e92992682bbaf8e6eb2316ac708bc0
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
-BuildRequires:	glibc-static
+BuildRequires:	klibc >= 1.0
 BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
 BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
@@ -38,14 +37,14 @@ Narzêdzia do ustawiania fbsplash.
 
 %prep
 %setup -q -a1
-find . -name CVS | xargs rm -rf 
 %patch0 -p1
-
 rm -rf libs
 
 %build
-install -d linux/include
-%{__make} splash_kern splash_user
+%{__make} splash_kern splash_user \
+	CRT0=%{_libdir}/klibc/crt0.o \
+	LIBC=%{_libdir}/klibc/libc.a
+
 %{__make} -C miscsplashutils-%{_misc_ver} \
 	CFLAGS="%{rpmcflags} -I/usr/include/freetype2" \
 	LIBDIR="%{_libdir}"
