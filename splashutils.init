@@ -26,7 +26,7 @@ case "$1" in
 	start)
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/fbsplash ]; then
-		if [ -e /dev/fbsplash ] && [ -e /proc/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
+		if [ -e /dev/fbsplash ] && [ -e /proc/sys/kernel/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
 
 			show "Setting framebuffer console images"; busy
 
