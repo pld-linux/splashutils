@@ -9,7 +9,7 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.1.9.6
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
@@ -20,8 +20,10 @@ Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/miscsplashutils
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
+Patch1:		%{name}-config.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
+BuildRequires:	glibc-static
 BuildRequires:	klibc >= 1.0
 BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
@@ -38,15 +40,22 @@ Narzêdzia do ustawiania fbsplash.
 %prep
 %setup -q -a1
 %patch0 -p1
-rm -rf libs
+%patch1 -p1
+rm -rf libs/klibc*
+rm -rf libs/zlib*
 
 %build
-%{__make} splash_kern splash_user \
+%{__make} splash_kern \
+	CC=klcc \
 	CRT0=%{_libdir}/klibc/crt0.o \
 	LIBC=%{_libdir}/klibc/libc.a
 
+%{__make} splash_user \
+	CC=%{__cc} \
+	CFLAGS="%{rpmcflags} -Os"
+
 %{__make} -C miscsplashutils-%{_misc_ver} \
-	CFLAGS="%{rpmcflags} -I/usr/include/freetype2" \
+	CFLAGS="%{rpmcflags} -Os -I/usr/include/freetype2" \
 	LIBDIR="%{_libdir}"
 
 %install
