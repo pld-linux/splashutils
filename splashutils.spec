@@ -9,7 +9,7 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.1.9.6
-Release:	0.2
+Release:	0.3
 License:	GPL
 Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
@@ -24,7 +24,7 @@ Patch1:		%{name}-config.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
 BuildRequires:	glibc-static
-BuildRequires:	klibc >= 1.0
+BuildRequires:	klibc-static >= 1.1.1-1
 BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
 BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
@@ -46,9 +46,7 @@ rm -rf libs/zlib*
 
 %build
 %{__make} splash_kern \
-	CC=klcc \
-	CRT0=%{_libdir}/klibc/crt0.o \
-	LIBC=%{_libdir}/klibc/libc.a
+	CC=klcc
 
 %{__make} splash_user \
 	CC=%{__cc} \
