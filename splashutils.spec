@@ -49,7 +49,7 @@ rm -rf libs/zlib*
 	CC=klcc
 
 %{__make} splash_user \
-	CC=%{__cc} \
+	CC="%{__cc}" \
 	CFLAGS="%{rpmcflags} -Os"
 
 %{__make} -C miscsplashutils-%{_misc_ver} \
