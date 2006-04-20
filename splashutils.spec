@@ -11,11 +11,11 @@ Name:		splashutils
 Version:	1.1.9.10
 Release:	0.3
 License:	GPL
-Group:		System
+Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
 # Source0-md5:	af1230e0f1bda32b519a6accf6ade734
 %define		_misc_ver	0.1.3
-Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/miscsplashutils-%{_misc_ver}.tar.bz2
+Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/misc%{name}-%{_misc_ver}.tar.bz2
 # Source1-md5:	f8e92992682bbaf8e6eb2316ac708bc0
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
@@ -29,6 +29,8 @@ BuildRequires:	libjpeg-static
 BuildRequires:	libpng-static
 BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
 BuildRequires:	zlib-static
+Requires(post,preun):	/sbin/chkconfig
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -70,7 +72,6 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/fbsplash
 rm -rf $RPM_BUILD_ROOT
 
 %post
-umask 022 
 /sbin/chkconfig --add fbsplash
 
 %preun
