@@ -1,0 +1,99 @@
+--- splashutils-1.1.9.10/image.c.orig	2006-06-23 13:08:41.000000000 +0000
++++ splashutils-1.1.9.10/image.c	2006-06-23 14:00:39.000000000 +0000
+@@ -61,6 +61,21 @@
+ 	}
+ }
+ 
++void inline rescale_line( rgbcolor* in_data, rgbcolor* out_data, int in_width, int out_width ) {
++	int in_pix = 0, out_pix, act;
++	for ( out_pix = 0; out_pix < out_width; out_pix++) {
++		act = out_pix * in_width / out_width;
++		while (act > in_pix) {
++			in_pix++;
++			in_data++;
++		}
++		out_data->r = in_data->r;
++		out_data->g = in_data->g;
++		out_data->b = in_data->b;
++		out_data++;
++	}
++}
++
+ #ifdef CONFIG_PNG
+ #define PALETTE_COLORS 240
+ int load_png(char *filename, u8 **data, struct fb_cmap *cmap, int *width, int *height, u8 want_alpha)
+@@ -208,8 +223,8 @@
+ 	struct jpeg_error_mgr jerr;
+ 	FILE* injpeg;
+ 
+-	u8 *buf = NULL;
+-	int i, bytespp = (fb_var.bits_per_pixel+7) >> 3;
++	u8 *buf = NULL, *buf_sc = NULL;
++	int bytespp = (fb_var.bits_per_pixel+7) >> 3;
+ 	
+ 	cinfo.err = jpeg_std_error(&jerr);
+ 	jpeg_create_decompress(&cinfo);
+@@ -223,6 +238,7 @@
+ 	jpeg_read_header(&cinfo, TRUE);
+ 	jpeg_start_decompress(&cinfo);
+ 
++	/*
+ 	if ((width && cinfo.output_width != *width) || (height && cinfo.output_height != *height)) {
+ 		printerr("Image size mismatch: %s.\n", filename);
+ 		return -2;
+@@ -230,29 +246,50 @@
+ 		*width = cinfo.output_width;
+ 		*height = cinfo.output_height;
+ 	}
++	*/
+ 	
+ 	buf = malloc(cinfo.output_width * cinfo.output_components * sizeof(char));
+ 	if (!buf) {
+ 		printerr("Failed to allocate JPEG decompression buffer.\n");
+ 		return -1;
+ 	}
++	buf_sc = malloc(*width * cinfo.output_components * sizeof(char));
++	if (!buf_sc) {
++		printerr("Failed to allocate scale buffer.\n");
++		return -1;
++	}
+ 
+-	*data = malloc(cinfo.output_width * cinfo.output_height * bytespp);
++	*data = malloc(*width * *height * bytespp);
+ 	if (!*data) {
+ 		printerr("Failed to allocate memory for image: %s.\n", filename);
+ 		return -4;
+ 	}
+-	
+-	for (i = 0; i < cinfo.output_height; i++) {
+-		jpeg_read_scanlines(&cinfo, (JSAMPARRAY) &buf, 1);
+-		truecolor2fb((truecolor*)buf, *data + cinfo.output_width * bytespp * i, cinfo.output_width, i, 0);
++
++	int in_line = -1, out_line, act;
++	for (out_line = 0; out_line < *height; out_line++) {
++		act = out_line * cinfo.output_height / *height; // line which should be read
++		if (act < in_line) {
++			// should not happen
++			printerr("Some error orurred while scaling: %s.\n", filename);
++			return -4;
++		}
++		while (act > in_line) {
++			in_line++;
++			jpeg_read_scanlines(&cinfo, (JSAMPARRAY) &buf, 1);
++			rescale_line( (rgbcolor*)buf, (rgbcolor*)buf_sc,
++				cinfo.output_width, *width);
++		}
++		truecolor2fb((truecolor*)buf_sc, *data + *width * bytespp * out_line, *width, out_line, 0);
+ 	}
++	while ( ++in_line < cinfo.output_height )
++		jpeg_read_scanlines(&cinfo, (JSAMPARRAY) &buf, 1);
+ 
+ 	jpeg_finish_decompress(&cinfo);
+ 	jpeg_destroy_decompress(&cinfo);
+ 	fclose(injpeg);
+ 
+ 	free(buf);
++	free(buf_sc);
+ 	return 0;
+ }
+ 
