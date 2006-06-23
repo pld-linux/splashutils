@@ -3,11 +3,12 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.1.9.10
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/current/%{name}-%{version}.tar.bz2
 # Source0-md5:	af1230e0f1bda32b519a6accf6ade734
+Patch0:		%{name}-jpeg_scale.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	libjpeg-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
@@ -21,6 +22,7 @@ Narzêdzia do ustawiania fbsplash.
 
 %prep
 %setup -q
+%patch0 -p1
 cat > Makefile << 'EOF'
 PKG_VERSION = %{version}
 
