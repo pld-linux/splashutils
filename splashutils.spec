@@ -35,7 +35,7 @@ K_OBJS	= $(addprefix kernel/,kernel.o dev.o parse.o render.o image.o \
 		cmd.o common.o list.o effects.o)
 
 splash_helper:	$(K_OBJS)
-	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 kernel/%.o:	%.c config.h splash.h
 	$(CC) $(CFLAGS) -DTARGET_KERNEL -c -o $@ $<
@@ -44,7 +44,7 @@ OBJS	= splash.o parse.o render.o image.o cmd.o common.o daemon.o list.o \
 	effects.o
 
 splash_util:	$(OBJS)
-	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $+
+	$(CC) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
 %.o:	%.c config.h splash.h
 	$(CC) $(CFLAGS) -DPKG_VERSION=\"$(PKG_VERSION)\" -c -o $@ $<
@@ -65,6 +65,7 @@ rm -rf libs
 mkdir kernel
 %{__make} \
 	CC="%{__cc}" \
+	LDFLAGS="%{rpmldflags}" \
 	CFLAGS="%{rpmcflags}"
 
 %install
