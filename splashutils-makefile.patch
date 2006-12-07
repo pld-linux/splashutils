@@ -1,72 +1,62 @@
-diff -Nur splashutils-1.1.9.10.orig/Makefile splashutils-1.1.9.10/Makefile
---- splashutils-1.1.9.10.orig/Makefile	2005-09-29 01:40:24.000000000 +0200
-+++ splashutils-1.1.9.10/Makefile	2006-04-02 20:20:31.000000000 +0200
-@@ -8,8 +8,6 @@
- #
+--- Makefile.orig	2006-07-15 00:02:22.000000000 +0200
++++ Makefile	2006-12-06 20:26:52.088282014 +0100
+@@ -18,11 +18,6 @@
+ # These variables can be defined on the command-line when the user
+ # builds splashutils against his own versions of the libraries.
  
- PKG_VERSION = 1.1.9.10
--DEBUG 	 = false		# set to true to prevent stripping
--K_SHARED = false		# set to true if you want to link to a shared klibc
- QUIET    = true
- 
- CC	= gcc
-@@ -17,7 +15,6 @@
- 
- JPEGSRC	?= libs/jpeg-6b
- LPNGSRC ?= libs/libpng-1.2.8
+-JPEGSRC	?= libs/jpeg-6b
+-LPNGSRC ?= libs/libpng-1.2.8
 -ZLIBSRC ?= libs/zlib-1.2.3
- FT2SRC  ?= libs/freetype-2.1.9
- 
- prefix     =
-@@ -30,26 +27,13 @@
- INSTALL_DATA 	= ${INSTALL} -m 644
- INSTALL_SCRIPT 	= ${INSTALL_PROG}
- 
--ifeq ($(strip $(K_SHARED)),true)
--	K_LDFLAGS = -shared
--else 
--	K_LDFLAGS = -static
--endif
+-FT2SRC  ?= libs/freetype-2.1.9
 -
--ifeq ($(strip $(QUIET)),true)
--	Q = @
--	OUTPUT = /dev/null
--else
--	Q =
--	OUTPUT = /dev/stdout
--endif
-+OUTPUT  = /dev/stdout
+ prefix     =
+ sbindir    = ${prefix}/sbin
+ usrbindir  = ${prefix}/usr/bin
+@@ -51,27 +46,21 @@
  
- ROOT	= $(shell pwd)
+ # Flags for the kernel utilities
+ K_CFLAGS = -w -ffunction-sections -fdata-sections $(MISCINCS) \
+-		-I$(ROOT)/$(ZLIBSRC) -I$(ROOT)/$(FT2SRC)/include \
++		-I/usr/include -I/usr/include/freetype2 \
+ 		-DWITH_ERRLIST -DTARGET_KERNEL -DTT_CONFIG_OPTION_BYTECODE_INTERPRETER
  
- # flags for the kernel utils
--K_CFLAGS = -w -ffunction-sections -fdata-sections $(MISCINCS) \
--	   -I$(ROOT)/$(ZLIBSRC) -I$(ROOT)/$(FT2SRC)/include -I$(ROOT)/linux/include -I$(ROOT)/linux/include2 \
--	   -DWITH_ERRLIST -DTARGET_KERNEL -DTT_CONFIG_OPTION_BYTECODE_INTERPRETER
-+K_CFLAGS = -I$(FT2SRC)/include -I/usr/include -ffunction-sections \
-+					 -fdata-sections -DTARGET_KERNEL -DTT_CONFIG_OPTION_BYTECODE_INTERPRETER
- 
- PNGDEFS = -DPNG_NO_WRITE_TIME -DPNG_NO_FLOATING_POINT_SUPPORTED -DPNG_NO_WRITE_SUPPORTED -DPNG_NO_READ_iTXt \
- 	  -DPNG_LEGACY_SUPPORTED -DPNG_NO_PROGRESSIVE_READ -DPNG_NO_MNG_FEATURES -DPNG_NO_CONSOLE_IO \
-@@ -62,10 +46,9 @@
+-PNGDEFS = -DPNG_NO_WRITE_TIME -DPNG_NO_FLOATING_POINT_SUPPORTED -DPNG_NO_WRITE_SUPPORTED -DPNG_NO_READ_iTXt \
+-		-DPNG_LEGACY_SUPPORTED -DPNG_NO_PROGRESSIVE_READ -DPNG_NO_MNG_FEATURES -DPNG_NO_CONSOLE_IO \
+-		-DPNG_NO_ERROR_NUMBERS -DPNG_READ_GRAY_TO_RGB_SUPPORTED -DPNG_READ_16_TO_8_SUPPORTED \
+-		-DPNG_READ_STRIP_ALPHA_SUPPORTED -DPNG_NO_INFO_IMAGE -DPNG_NO_READ_TRANSFORMS -DPNG_NO_READ_ANCILLARY_CHUNKS
+-	  
+-K_LDLIBS = $(OBJDIR)/jpeglib/libjpeg.a
++K_LDLIBS = -ljpeg
+ K_OBJS 	 = $(KOUT)/kernel.o $(KOUT)/dev.o $(KOUT)/parse.o $(KOUT)/render.o $(KOUT)/image.o \
+ 		   $(KOUT)/cmd.o $(KOUT)/common.o $(KOUT)/list.o $(KOUT)/effects.o
  K_DEPS   = 
  
- # flags for the user utils
+ # Flags for the user utilities
 -CFLAGS   = -Wall -g
- LDLIBS   = -ljpeg -lm
+ LDLIBS   = -ljpeg -lm -pthread
  LDFLAGS  = 
--INCLUDES = -I$(ROOT)/linux/include -I/usr/include/freetype2
-+INCLUDES = -I/usr/linux/include -I/usr/include/freetype2
- OBJS     = splash.o parse.o render.o image.o cmd.o common.o daemon.o list.o effects.o
  
- # checks whether an opton is set in config.h
-@@ -88,16 +71,12 @@
+ # Include the klibc header files so that we can compile against fb.h
+ # from a kernel thee patched with fbsplash.
+-INCLUDES = -I/usr/include/freetype2 -idirafter /usr/lib/klibc/include/linux
++INCLUDES = -I/usr/include/freetype2 -idirafter /usr/include/linux
+ OBJS     = $(OBJDIR)/splash.o $(OBJDIR)/parse.o $(OBJDIR)/render.o $(OBJDIR)/image.o \
+ 		   $(OBJDIR)/cmd.o $(OBJDIR)/common.o $(OBJDIR)/daemon.o $(OBJDIR)/daemon_cmd.o \
+ 	       $(OBJDIR)/list.o $(OBJDIR)/effects.o
+@@ -90,22 +79,16 @@
+ endif
+ 
+ ifeq ($(call config_opt,CONFIG_TTF_KERNEL),true)
+-	K_LDLIBS += $(OBJDIR)/freetype2/.libs/libfreetype.a 
++	K_LDLIBS += -lfreetype
+ 	K_OBJS 	 += $(KOUT)/ttf.o
+-	K_DEPS	 += ft2
  endif
  
  ifeq ($(call config_opt,CONFIG_PNG),true)
 -	K_LDLIBS += $(LPNGSRC)/libpng.a $(ZLIBSRC)/libz.a 
-+	K_LDLIBS += $(LPNGSRC)/libpng.a -lz
- 	K_DEPS	 += libpng
+-	K_DEPS	 += libpng
++	K_LDLIBS += -lpng -lz
  	LDLIBS	 += -lpng -lz -lm
  endif	
  
@@ -76,98 +66,145 @@ diff -Nur splashutils-1.1.9.10.orig/Makefile splashutils-1.1.9.10/Makefile
  	STRIP = strip --strip-all -R .comment -R .note
 -endif
  
- KOUT	= kernel
- dotg    = \e[32;01m*\e[0m
-@@ -120,38 +99,21 @@
+ OBJDIR	= objs
+ KOUT	= $(OBJDIR)/kernel
+@@ -137,8 +120,8 @@
  
- $(SP_UTIL): $(OBJS)
- 	@$(call info,LD,$@)
+ $(OBJDIR)/$(SP_UTIL): $(OBJS)
+ 	@$(call infmsg,LD,$@)
 -	$(Q)$(CC) $+ $(LDLIBS) -o $@
 -	$(Q)$(CC) $+ $(LDLIBS) -static -o $@.static
--
--linux:
--	@if [ ! -e "$(ROOT)/linux" ]; then \
--		ln -s /lib/modules/`uname -r`/source/ "$(ROOT)/linux"; \
--	fi
-+	$(CC) $+ $(LDLIBS) -o $@
-+	$(CC) $+ $(LDLIBS) -static -o $@.static
++	$(Q)$(CC) $(INCLUDES) $+ $(LDLIBS) -o $@
++	$(Q)$(CC) $(INCLUDES) $+ $(LDLIBS) -static -o $@.static
  
- kdir:
- 	@if [ ! -d "$(ROOT)/$(KOUT)" ]; then \
- 		mkdir "$(ROOT)/$(KOUT)" ; \
+ objdir:	
+ 	@if [ ! -d "$(OBJDIR)" ]; then \
+@@ -148,71 +131,16 @@
+ 		mkdir "$(KOUT)" ; \
  	fi
  
 -zlib:	config.h
 -	@cd $(ZLIBSRC) ; \
 -	if [ ! -e ./Makefile ]; then \
--		$(call info,CONF,zlib) ; \
+-		$(call infmsg,CONF,zlib) ; \
 -		CC=$(KLCC) CFLAGS="$(K_CFLAGS)" \
 -		./configure > $(OUTPUT); \
 -		sed -i 's#^CFLAGS=\(.*\)#CFLAGS=\1 $(K_CFLAGS)#' Makefile ; \
 -	fi ; \
--	if ! make -q CC=$(KLCC) libz.a; then $(call info,MAKE,zlib) ; fi ; \
+-	if ! make -q CC=$(KLCC) libz.a; then $(call infmsg,MAKE,zlib) ; fi ; \
 -	make CC=$(KLCC) libz.a > $(OUTPUT)
 -
 -libpng:	zlib config.h
-+libpng:	config.h
- 	@cd $(LPNGSRC) ; \
- 	if [ ! -e ./Makefile ]; then \
- 		$(call info,CONF,libpng) ; \
- 		cp scripts/makefile.linux Makefile > $(OUTPUT); \
- 		sed -i -e '/^CFLAGS/ { N ; s#^CFLAGS=.*#CFLAGS=$(K_CFLAGS) $(PNGDEFS)# ; P ; D }' \
+-	@cd $(LPNGSRC) ; \
+-	if [ ! -e ./Makefile ]; then \
+-		$(call infmsg,CONF,libpng) ; \
+-		cp scripts/makefile.linux Makefile > $(OUTPUT); \
+-		sed -i -e '/^CFLAGS/ { N ; s#^CFLAGS=.*#CFLAGS=$(K_CFLAGS) $(PNGDEFS)# ; P ; D }' \
 -		       -e 's#^ZLIBINC=.*#ZLIBINC=$(ZLIBSRC)#' \
 -		       -e 's#^ZLIBLIB=.*#ZLIBLIB=$(ZLIBSRC)#' Makefile ; \
-+		       Makefile; \
- 	fi ; \
- 	if ! make -q CC=$(KLCC) libpng.a; then $(call info,MAKE,libpng) ; fi ; \
- 	make CC=$(KLCC) libpng.a > $(OUTPUT) 
-@@ -180,29 +142,28 @@
- 	if ! make -q CFLAGS="$(K_CFLAGS)" library; then $(call info,MAKE,freetype2) ; fi ; \
- 	make CFLAGS="-c $(K_CFLAGS)" library > $(OUTPUT)
- 	
--splash_kern: linux jpeglib kdir $(K_DEPS) $(SP_HELPER) config.h $(K_LDLIBS)
-+splash_kern: jpeglib kdir $(K_DEPS) $(SP_HELPER) $(LIBC) config.h $(K_LDLIBS)
+-	fi ; \
+-	if ! make -q CC=$(KLCC) libpng.a; then $(call infmsg,MAKE,libpng) ; fi ; \
+-	make CC=$(KLCC) libpng.a > $(OUTPUT) 
+-
+-jpeglib:
+-	@cd $(OBJDIR) ; \
+-	if [ ! -d jpeglib ] ; then \
+-		mkdir jpeglib ; \
+-	fi ; \
+-	cd jpeglib ; \
+-	if [ ! -e ./Makefile ]; then \
+-		$(call infmsg,CONF,libjpeg) ; \
+-		CC=$(KLCC) CFLAGS="$(K_CFLAGS) -I$(ROOT)/$(OBJDIR)/jpeglib" \
+-		$(ROOT)/$(JPEGSRC)/configure > $(OUTPUT) ; \
+-		echo "#define NO_GETENV 1" >> jconfig.h ; \
+-		sed -i "s#CFLAGS=.*#CFLAGS=$(K_CFLAGS) -I$(ROOT)/$(OBJDIR)/jpeglib#" Makefile ; \
+-		sed -i "s:#define JMESSAGE.*::" jerror.c ; \
+-	fi ; \
+-	if ! make -q CC=$(KLCC) libjpeg.a; then $(call infmsg,MAKE,libjpeg) ; fi ; \
+-	make CC=$(KLCC) libjpeg.a > $(OUTPUT)
+-
+-ft2:	config.h
+-	@cd $(OBJDIR) ; \
+-	if [ ! -d freetype2 ] ; then \
+-		mkdir freetype2 ; \
+-	fi ; \
+-	cd freetype2 ; \
+-	if [ ! -e ./config.mk ]; then \
+-		$(call infmsg,CONF,freetype2) ; \
+-		CC=$(KLCC) CPPFLAGS="-I$(ROOT)/$(ZLIBSRC)" \
+-		CFLAGS="$(K_CFLAGS) -include $(ROOT)/klibc_compat.h" \
+-		$(ROOT)/$(FT2SRC)/configure --disable-shared > $(OUTPUT) ; \
+-	fi ; \
+-	if ! make -q CFLAGS="$(K_CFLAGS)" library; then $(call infmsg,MAKE,freetype2) ; fi ; \
+-	make CFLAGS="-c $(K_CFLAGS)" library > $(OUTPUT)
+-	
+-splash_kern: jpeglib $(K_DEPS) $(OBJDIR)/$(SP_HELPER) config.h $(K_LDLIBS)
++splash_kern: $(K_DEPS) $(OBJDIR)/$(SP_HELPER) config.h $(K_LDLIBS)
  
- $(SP_HELPER): $(K_OBJS)
- 	@$(call info,LD,$@)
+ $(OBJDIR)/$(SP_HELPER): $(K_OBJS)
+ 	@$(call infmsg,LD,$@)
 -	$(Q)$(KLCC) $(K_LDFLAGS) -o $@ $+ $(K_LDLIBS)
-+	@$(CC) -static $(K_LDFLAGS) -o $@ $+ $(K_LDLIBS)
++	$(Q)$(CC) -I/usr/include -I/usr/include/freetype2 $(K_LDFLAGS) -o $@ $+ $(K_LDLIBS) -lm
  	$(Q)$(STRIP) $@
  
  $(KOUT)/%.o: %.c config.h splash.h
- 	@$(call info,CC,$@)
--	$(Q)$(KLCC) $(K_CFLAGS) -I/usr/include -c -o $@ $<
-+	@$(CC) $(K_CFLAGS) -c -o $@ $<
+ 	@$(call infmsg,CC,$@)
+-	$(Q)$(KLCC) $(K_CFLAGS) -c -o $@ $<
++	$(Q)$(CC) $(K_CFLAGS) -c -o $@ $<
  
- %.o: %.c config.h splash.h
- 	@$(call info,CC,$@)
--	$(Q)$(CC) $(CFLAGS) $(INCLUDES) -DPKG_VERSION=\"$(PKG_VERSION)\" -c -o $@ $<
-+	@$(CC) $(CFLAGS) $(INCLUDES) -DPKG_VERSION=\"$(PKG_VERSION)\" -c -o $@ $<
+ $(OBJDIR)/%.o: %.c config.h splash.h daemon.h
+ 	@$(call infmsg,CC,$@)
+@@ -220,7 +148,7 @@
  
--clean:	clean_jpg clean_png clean_zlib clean_ft2 clean_splash
-+clean: clean_jpg clean_png clean_ft2 clean_splash
+ clean:	clean_all
  
- clean_splash:
- 	@$(call info,CLEAN,splash)
- 	$(Q)rm -f *.o
- 	$(Q)rm -f kernel/*.o
- 	$(Q)rm -f splash_helper splash_util splash_util.static
--	$(Q)rm -f linux
+-clean_all:	clean_zlib clean_png
++clean_all:
+ 	@$(call infmsg,CLEAN,all)
+ 	$(Q)rm -rf $(OBJDIR)/*
  
- clean_jpg:
- 	@cd $(JPEGSRC) ; \
-@@ -220,14 +181,6 @@
- 		rm -f Makefile ; \
- 	fi
+@@ -231,44 +159,6 @@
+ 	$(Q)rm -f $(OBJDIR)/splash_helper splash_util splash_util.static 
+ 	$(Q)rm -r config.h
  
--clean_zlib:
--	@cd $(ZLIBSRC) ; \
+-clean_jpg:
+-	$(Q)cd $(OBJDIR) ; \
+-	if [ -e jpeglib ]; then \
+-		cd jpeglib ; \
+-	fi ; \
 -	if [ -e Makefile ]; then \
--		$(call info,CLEAN,zlib) ; \
+-		$(call infmsg,CLEAN,libjpeg) ; \
 -		make clean > $(OUTPUT) ; \
 -		rm -f Makefile ; \
 -	fi
 -
- clean_ft2:
- 	@cd $(FT2SRC) ; \
- 	if [ -e ./config.mk ]; then \
+-clean_png:
+-	$(Q)cd $(LPNGSRC) ; \
+-	if [ -e Makefile ]; then \
+-		$(call infmsg,CLEAN,libpng) ; \
+-		make clean > $(OUTPUT) ; \
+-		rm -f Makefile ; \
+-	fi
+-
+-clean_zlib:
+-	$(Q)cd $(ZLIBSRC) ; \
+-	if [ -e Makefile ]; then \
+-		$(call infmsg,CLEAN,zlib) ; \
+-		make clean > $(OUTPUT) ; \
+-		rm -f Makefile ; \
+-	fi
+-
+-clean_ft2:
+-	$(Q)cd $(OBJDIR) ; \
+-	if [ -e freetype2 ]; then \
+-		cd freetype2 ; \
+-	fi ; \
+-	if [ -e ./config.mk ]; then \
+-		$(call infmsg,CLEAN,freetype2) ; \
+-		make clean > $(OUTPUT) ; \
+-		rm -f config.mk ; \
+-	fi
+-
+ install: all
+ 	@$(call infmsg,INSTALL,$(SP_HELPER))
+ 	$(Q)$(INSTALL_PROG) -D $(OBJDIR)/$(SP_HELPER) $(DESTDIR)$(sbindir)/$(SP_HELPER)
