@@ -4,23 +4,24 @@
 #		time - initramfs) + maybe some init.d
 #	- check initramfs (upgrade geninitrd maybe), cause splashutils can
 #		make use of it
+#	- update dirs in scripts
 #
 Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
-Version:	1.1.9.10
-Release:	0.3
+Version:	1.3
+Release:	0.1
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
-# Source0-md5:	af1230e0f1bda32b519a6accf6ade734
-%define		_misc_ver	0.1.3
+# Source0-md5:	c7c92b98e34b860511aa57bd29d62f76
+%define		_misc_ver	0.1.5
 Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/misc%{name}-%{_misc_ver}.tar.bz2
-# Source1-md5:	f8e92992682bbaf8e6eb2316ac708bc0
+# Source1-md5:	20fc3ed2407edc8cd97623bf7f1c5c7b
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
-Patch1:		%{name}-config.patch
+Patch1:		%{name}-compile.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
 BuildRequires:	glibc-static
@@ -41,14 +42,22 @@ Narzêdzia do ustawiania fbsplash.
 
 %prep
 %setup -q -a1
-%patch0 -p1
-%patch1 -p1
-rm -rf libs/klibc*
-rm -rf libs/zlib*
+%patch0 -p0
+%patch1 -p0
 
 %build
+./configure \
+	--with-fbsplash \
+	--with-fifo=%{_lib}/splash/cache/.splash \
+	--with-png \
+	--with-themedir=%{_sysconfdir}/splash \
+	--with-ttf \
+	--with-ttfkern
+
+%{__make} objdir
+
 %{__make} splash_kern \
-	CC=klcc
+	CC=%{__cc}
 
 %{__make} splash_user \
 	CC="%{__cc}" \
