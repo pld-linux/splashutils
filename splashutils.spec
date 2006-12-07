@@ -57,7 +57,7 @@ Narzêdzia do ustawiania fbsplash.
 %{__make} objdir
 
 %{__make} splash_kern \
-	CC=%{__cc}
+	CC="%{__cc}"
 
 %{__make} splash_user \
 	CC="%{__cc}" \
