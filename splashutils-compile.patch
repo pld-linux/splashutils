@@ -1,0 +1,11 @@
+--- splash.h.orig	2006-07-15 00:02:23.000000000 +0200
++++ splash.h	2006-12-06 19:21:06.668282014 +0100
+@@ -4,7 +4,7 @@
+ #include "config.h"
+ #include <stdio.h>
+ #include <sys/types.h>
+-#include <sys/vt.h>
++#include <linux/vt.h>
+ #include <linux/kd.h>
+ #include <linux/tty.h>
+ #include <linux/input.h>
