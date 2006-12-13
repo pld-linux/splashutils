@@ -1,0 +1,62 @@
+diff -urN splashutils-1.3/config.h splashutils-1.3.new/config.h
+--- splashutils-1.3/config.h	1970-01-01 01:00:00.000000000 +0100
++++ splashutils-1.3.new/config.h	2006-12-13 14:49:52.439366829 +0100
+@@ -0,0 +1,7 @@
++#define CONFIG_FBSPLASH
++#define SPLASH_FIFO "/var/run/splashutils/.splash"
++#undef CONFIG_MNG
++#define CONFIG_PNG
++#define THEME_DIR "/etc/splash"
++#define CONFIG_TTF
++#define CONFIG_TTF_KERNEL
+diff -urN splashutils-1.3/configure splashutils-1.3.new/configure
+--- splashutils-1.3/configure	2006-07-15 00:02:22.000000000 +0200
++++ splashutils-1.3.new/configure	2006-12-13 14:38:46.941872035 +0100
+@@ -40,7 +40,7 @@
+ copt_fifo=SPLASH_FIFO
+ copt_fifo_desc="Specify where the splash FIFO should be located"
+ copt_fifo_type="string"
+-copt_fifo_def="/lib/splash/cache/.splash"
++copt_fifo_def="/var/run/splashutils/.splash"
+ 
+ options=`set | grep '^copt_' | sed -re 's/copt_([^_=]+)[_=].*/\1/' | uniq`
+ 
+diff -urN splashutils-1.3/scripts/bootsplash2fbsplash splashutils-1.3.new/scripts/bootsplash2fbsplash
+--- splashutils-1.3/scripts/bootsplash2fbsplash	2006-07-15 00:02:23.000000000 +0200
++++ splashutils-1.3.new/scripts/bootsplash2fbsplash	2006-12-13 15:09:54.410282924 +0100
+@@ -6,7 +6,7 @@
+ # Usage: bootsplash2fbsplash [--remove-comments] <theme_name>
+ #
+ 
+-$path_bp = "/etc/bootsplash/";
++$path_bp = "/etc/bootsplash/themes";
+ $path_fbspl = "/etc/splash";
+ $comments = 1;
+ $theme = "";
+diff -urN splashutils-1.3/scripts/splash_manager splashutils-1.3.new/scripts/splash_manager
+--- splashutils-1.3/scripts/splash_manager	2006-07-15 00:02:23.000000000 +0200
++++ splashutils-1.3.new/scripts/splash_manager	2006-12-13 14:32:25.332424733 +0100
+@@ -19,9 +19,9 @@
+ 
+ # System configuration variables
+ spl_util=splash_util.static
+-spl_dir=/lib/splash
+-spl_fifo=${spl_dir}/cache/.splash
+-spl_pidfile=${spl_dir}/cache/daemon.pid
++spl_dir=/var/run/splashutils
++spl_fifo=${spl_dir}/.splash
++spl_pidfile=${spl_dir}/daemon.pid
+ themedir=/etc/splash
+ 
+ cleanup() {
+@@ -834,8 +834,8 @@
+ }
+ 
+ # Set some useful variables that we'll be using in various places
+-res=$(${spl_dir}/bin/fbres)
+-ctty=$(${spl_dir}/bin/fgconsole)
++res=$(/usr/bin/fbres)
++ctty=$(/usr/bin/fgconsole)
+ usleep="${spl_dir}/bin/usleep"
+ yres=${res#*x}
+ xres=${res%x*}
