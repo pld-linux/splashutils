@@ -10,7 +10,7 @@ Summary:	Utilities for setting fbsplash
 Summary(pl):	Narzêdzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.3
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
@@ -22,6 +22,7 @@ Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
 Patch1:		%{name}-compile.patch
+Patch2:		%{name}-pld-paths.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
 BuildRequires:	glibc-static
@@ -44,11 +45,12 @@ Narzêdzia do ustawiania fbsplash.
 %setup -q -a1
 %patch0 -p0
 %patch1 -p0
+%patch2 -p1
 
 %build
 ./configure \
 	--with-fbsplash \
-	--with-fifo=%{_lib}/splash/cache/.splash \
+	--with-fifo=/var/run/splashutils/.splash \
 	--with-png \
 	--with-themedir=%{_sysconfdir}/splash \
 	--with-ttf \
@@ -69,7 +71,8 @@ Narzêdzia do ustawiania fbsplash.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig} \
+	    $RPM_BUILD_ROOT/var/run/%{name}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -92,6 +95,7 @@ fi
 %defattr(644,root,root,755)
 %doc AUTHORS README docs/*
 %dir %{_sysconfdir}/splash
+%dir %attr(755,root,root) /var/run/splashutils
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) /sbin/*
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/fbsplash
