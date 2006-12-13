@@ -4,6 +4,9 @@
 # on the kernel command line is used)
 # SPLASH_THEME="darkblue"
 
+# a spaced separated resolutions list to support at boot time
+# FB_SPLASH_RESOLUTIONS="1024x768"
+
 # on which ttys should fbsplash be enabled? defaults to RC_TTY_NUMBER
 # SPLASH_TTYS="0 1 2 3 4 5 6 7"
 
