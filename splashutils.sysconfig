@@ -1,5 +1,8 @@
 # Config file for splashutils
 
+# fbsplash enabled?
+# FB_SPLASH="yes"
+
 # a theme to use, probably best left commented (the theme specified
 # on the kernel command line is used)
 # SPLASH_THEME="darkblue"
