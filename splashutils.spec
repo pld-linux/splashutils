@@ -7,7 +7,7 @@
 #	- update dirs in scripts
 #
 Summary:	Utilities for setting fbsplash
-Summary(pl.UTF-8):   Narzędzia do ustawiania fbsplash
+Summary(pl.UTF-8):	Narzędzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.3
 Release:	1
