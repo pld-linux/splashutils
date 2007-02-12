@@ -7,7 +7,7 @@
 #	- update dirs in scripts
 #
 Summary:	Utilities for setting fbsplash
-Summary(pl):	Narzêdzia do ustawiania fbsplash
+Summary(pl.UTF-8):   NarzÄ™dzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.3
 Release:	1
@@ -38,8 +38,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 Utilities for setting fbsplash.
 
-%description -l pl
-Narzêdzia do ustawiania fbsplash.
+%description -l pl.UTF-8
+NarzÄ™dzia do ustawiania fbsplash.
 
 %prep
 %setup -q -a1
