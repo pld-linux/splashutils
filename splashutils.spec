@@ -33,6 +33,7 @@ BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
 BuildRequires:	zlib-static
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
+Suggests:	fbsplash-theme
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
