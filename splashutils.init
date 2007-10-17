@@ -21,17 +21,12 @@ RES="`/usr/bin/fbres`"
 test -z "${SPLASH_THEME}" && SPLASH_THEME="default"
 test -z "${SPLASH_TTYS}" && SPLASH_TTYS="0 1 2 3 4 5 6 7"
 
-# See how we were called.
-case "$1" in
-	start)
+start() {
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/fbsplash ]; then
 		if [ -e /dev/fbsplash ] && [ -e /proc/sys/kernel/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
-
 			show "Setting framebuffer console images"; busy
-
 			for TTY in ${SPLASH_TTYS}; do
-
 				theme="${SPLASH_THEME}"
 
 				if [ -n "${SPLASH_TTY_MAP}" ]; then
@@ -48,28 +43,35 @@ case "$1" in
 				/sbin/splash_util --vc="${TTY}" -c on 2>/dev/null
 
 			done
-
 			ok
-
 			touch /var/lock/subsys/fbsplash
 		fi
 	else
 		msg_already_running fbsplash
 	fi
-	;;
-	stop)
+}
+
+stop() {
 	if [ -f /var/lock/subsys/fbsplash ]; then
 		rm -f /var/lock/subsys/fbsplash
 	else
 		msg_not_running fbsplash
 	fi
+}
+
+# See how we were called.
+case "$1" in
+start)
+	start
 	;;
-	restart)
-	$0 stop
-	$0 start
-	exit $?
+stop)
+	stop
 	;;
-	*)
+restart)
+	stop
+	start
+	;;
+*)
 	msg_usage "$0 {start|stop|restart}"
 	exit 3
 esac
