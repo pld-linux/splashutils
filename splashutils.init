@@ -25,7 +25,7 @@ start() {
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/fbsplash ]; then
 		if [ -e /dev/fbsplash ] && [ -e /proc/sys/kernel/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
-			show "Setting framebuffer console images"; busy
+			show "Setting framebuffer console images for theme '%s'" $SPLASH_THEME; busy
 			for TTY in ${SPLASH_TTYS}; do
 				theme="${SPLASH_THEME}"
 
