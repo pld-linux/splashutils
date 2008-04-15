@@ -15,8 +15,8 @@ License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
 # Source0-md5:	c7c92b98e34b860511aa57bd29d62f76
-%define		_misc_ver	0.1.5
-Source1:	http://dev.gentoo.org/~spock/projects/gensplash/current/misc%{name}-%{_misc_ver}.tar.bz2
+%define		misc_ver	0.1.5
+Source1:	http://dev.gentoo.org/~spock/projects/gensplash/archive/misc%{name}-%{misc_ver}.tar.bz2
 # Source1-md5:	20fc3ed2407edc8cd97623bf7f1c5c7b
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
@@ -68,7 +68,7 @@ Narzędzia do ustawiania fbsplash.
 	CC="%{__cc}" \
 	CFLAGS="%{rpmcflags} -Os"
 
-%{__make} -C miscsplashutils-%{_misc_ver} \
+%{__make} -C miscsplashutils-%{misc_ver} \
 	CFLAGS="%{rpmcflags} -Os -I/usr/include/freetype2" \
 	LIBDIR="%{_libdir}"
 
@@ -79,7 +79,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-install miscsplashutils-%{_misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT%{_bindir}
+install miscsplashutils-%{misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT%{_bindir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/fbsplash
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/fbsplash
 
