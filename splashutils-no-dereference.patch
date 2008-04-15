@@ -1,0 +1,11 @@
+--- ./splash_geninitramfs	2008-04-15 10:20:25.000000000 +0300
++++ ./splash_geninitramfs	2007-11-02 18:30:19.000000000 +0200
+@@ -221,7 +221,7 @@
+ 
+ printv "o Creating initramfs image.."
+ if [ "$mode" == "g" ] || [ "$mode" == "a" ]; then	
+-	(cd "${imgdir}" ; find . | cpio --quiet --dereference -o -H newc | gzip -9 >../img.cpio.gz)
++	(cd "${imgdir}" ; find . | cpio --quiet -o -H newc | gzip -9 >../img.cpio.gz)
+ 	mv "${workdir}/img.cpio.gz" "${img}"
+ fi
+ 
