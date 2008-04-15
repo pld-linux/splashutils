@@ -10,7 +10,7 @@ Summary:	Utilities for setting fbsplash
 Summary(pl.UTF-8):	Narzędzia do ustawiania fbsplash
 Name:		splashutils
 Version:	1.3
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/gensplash/archive/%{name}-%{version}.tar.bz2
@@ -23,6 +23,7 @@ Source3:	%{name}.sysconfig
 Patch0:		%{name}-makefile.patch
 Patch1:		%{name}-compile.patch
 Patch2:		%{name}-pld-paths.patch
+Patch3:		%{name}-no-dereference.patch
 URL:		http://dev.gentoo.org/~spock/projects/gensplash/
 BuildRequires:	freetype-static
 BuildRequires:	glibc-static
@@ -47,6 +48,7 @@ Narzędzia do ustawiania fbsplash.
 %patch0 -p0
 %patch1 -p0
 %patch2 -p1
+%patch3 -p1
 
 %build
 ./configure \
