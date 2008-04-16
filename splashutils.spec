@@ -1,8 +1,8 @@
 # TODO
 # - static linking for initrd
 # Conditional build:
-%bcond_with	verbose		# verbose build (V=1)
-%bcond_with	initrd	# build klibc static initrd binaries
+%bcond_without	verbose		# verbose build (V=1)
+%bcond_without	initrd	# build klibc static initrd binaries
 Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
 Name:		splashutils
@@ -21,6 +21,7 @@ Patch0:		%{name}-libs.patch
 URL:		http://dev.gentoo.org/~spock/projects/splashutils/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	libtool
 BuildRequires:	freetype-devel
 BuildRequires:	gpm-devel
 BuildRequires:	klibc-devel >= 1.1.1-1
@@ -85,6 +86,7 @@ mv configure{,.dist}
 
 %build
 if [ ! -f configure -o configure.ac -nt configure ]; then
+	%{__libtoolize}
 	%{__aclocal}
 	%{__autoconf}
 	%{__autoheader}
@@ -103,6 +105,9 @@ fi
 	--with-ttf-kernel
 
 %{__make} %{?with_verbose:QUIET=false}
+
+%{__make} install DESTDIR=`pwd`/klibc
+%{__make} clean
 %endif
 
 # build shared for system
