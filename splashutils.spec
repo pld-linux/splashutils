@@ -1,8 +1,8 @@
 # TODO
-# - finish static linking
+# - static linking for initrd
 # Conditional build:
 %bcond_with	verbose		# verbose build (V=1)
-
+%bcond_with	initrd	# build klibc static initrd binaries
 %define		misc_ver	0.1.5
 Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
@@ -13,8 +13,6 @@ License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{version}.tar.bz2
 # Source0-md5:	325e11440bb040c72b71556ece17a7dd
-Source1:	http://dev.gentoo.org/~spock/projects/gensplash/archive/misc%{name}-%{misc_ver}.tar.bz2
-# Source1-md5:	20fc3ed2407edc8cd97623bf7f1c5c7b
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-libs.patch
@@ -24,6 +22,16 @@ Patch0:		%{name}-libs.patch
 URL:		http://dev.gentoo.org/~spock/projects/splashutils/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	freetype-devel
+BuildRequires:	gpm-devel
+BuildRequires:	klibc-devel >= 1.1.1-1
+BuildRequires:	lcms-devel
+BuildRequires:	libjpeg-devel
+BuildRequires:	libmng-devel
+BuildRequires:	libpng-devel
+BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
+BuildRequires:	zlib-devel
+%if %{with initrd}
 BuildRequires:	freetype-static
 BuildRequires:	glibc-static
 BuildRequires:	gpm-static
@@ -32,8 +40,9 @@ BuildRequires:	lcms-static
 BuildRequires:	libjpeg-static
 BuildRequires:	libmng-static
 BuildRequires:	libpng-static
-BuildRequires:	linux-libc-headers >= 7:2.6.9.1-1.5
 BuildRequires:	zlib-static
+%endif
+Requires(post):	/sbin/ldconfig
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
 Suggests:	splash-theme
@@ -44,6 +53,22 @@ Utilities for setting splash.
 
 %description -l pl.UTF-8
 Narzędzia do ustawiania splash.
+
+%package devel
+Summary:	Header files for splashutils
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description devel
+Header files for splashutils libraries
+
+%package static
+Summary:	Static splashutils libraries
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static splashutils libraries
 
 %prep
 %setup -q %{?notyet:-a1}
@@ -66,6 +91,9 @@ if [ ! -f configure -o configure.ac -nt configure ]; then
 	%{__autoheader}
 	%{__automake}
 fi
+
+%if %{with initrd}
+# build klibc static for initrd
 %configure \
 	--with-themedir=%{_sysconfdir}/splash \
 	--with-gpm \
@@ -73,24 +101,24 @@ fi
 	--with-png \
 	--with-png \
 	--with-ttf \
-	--with-ttf-kernel \
+	--with-ttf-kernel
 
 %{__make} %{?with_verbose:QUIET=false}
-
-%if 0
-%{__make} objdir
-
-%{__make} splash_kern \
-	CC="%{__cc}"
-
-%{__make} splash_user \
-	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags} -Os"
-
-%{__make} -C miscsplashutils-%{misc_ver} \
-	CFLAGS="%{rpmcflags} -Os -I/usr/include/freetype2" \
-	LIBDIR="%{_libdir}"
 %endif
+
+# build shared for system
+%configure \
+	--enable-klibc-shared \
+	--with-klibc-compiler="%{__cc}" \
+	--with-themedir=%{_sysconfdir}/splash \
+	--with-gpm \
+	--with-mng \
+	--with-png \
+	--with-png \
+	--with-ttf \
+	--with-ttf-kernel
+
+%{__make} %{?with_verbose:QUIET=false}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -99,17 +127,19 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-%if 0
-install miscsplashutils-%{misc_ver}/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT%{_bindir}
-%endif
+
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/splash
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/splash
+rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/sbin/ldconfig
 /sbin/chkconfig --add splash
+
+%postun	-p /sbin/ldconfig
 
 %preun
 if [ "$1" = "0" ]; then
@@ -118,10 +148,41 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS README docs/*
+%doc AUTHORS README docs/[!M]*
+%attr(755,root,root) /sbin/fbcondecor_ctl.static
+%attr(755,root,root) /sbin/fbcondecor_helper
+%attr(755,root,root) /sbin/fbsplashctl
+%attr(755,root,root) /sbin/fbsplashd.static
+%attr(755,root,root) /sbin/splash-functions.sh
+%attr(755,root,root) /sbin/splash_util.static
+%attr(755,root,root) %{_bindir}/bootsplash2fbsplash
+%attr(755,root,root) %{_bindir}/splash_manager
+%attr(755,root,root) %{_bindir}/splash_resize
+%attr(755,root,root) %{_bindir}/splash_util
+%attr(755,root,root) %{_bindir}/splashy2fbsplash.py
+%attr(755,root,root) %{_sbindir}/fbcondecor_ctl
+%attr(755,root,root) %{_sbindir}/fbsplashd
+%attr(755,root,root) %{_sbindir}/splash_geninitramfs
+%attr(755,root,root) %{_libdir}/libfbsplash.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libfbsplash.so.1
+%attr(755,root,root) %{_libdir}/libfbsplashrender.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libfbsplashrender.so.1
+%attr(754,root,root) /etc/rc.d/init.d/splash
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/splash
 %dir %{_sysconfdir}/splash
 %dir /var/run/splashutils
-%attr(755,root,root) %{_bindir}/*
-%attr(755,root,root) /sbin/*
-%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/splash
-%attr(754,root,root) /etc/rc.d/init.d/splash
+
+%files devel
+%defattr(644,root,root,755)
+%{_libdir}/libfbsplash.so
+%{_libdir}/libfbsplashrender.so
+%{_libdir}/libfbsplash.la
+%{_libdir}/libfbsplashrender.la
+%{_includedir}/fbsplash.h
+%{_pkgconfigdir}/libfbsplash.pc
+%{_pkgconfigdir}/libfbsplashrender.pc
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libfbsplash.a
+%{_libdir}/libfbsplashrender.a
