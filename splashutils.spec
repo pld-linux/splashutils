@@ -3,12 +3,11 @@
 # Conditional build:
 %bcond_with	verbose		# verbose build (V=1)
 %bcond_with	initrd	# build klibc static initrd binaries
-%define		misc_ver	0.1.5
 Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
 Name:		splashutils
 Version:	1.5.4
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{version}.tar.bz2
@@ -144,6 +143,13 @@ rm -rf $RPM_BUILD_ROOT
 %preun
 if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del splash
+fi
+
+%triggerpostun -- %{name} < 1.5.4-0.2
+# migrate from apache-config macros
+if [ -f /etc/sysconfig/fbsplash.rpmsave ]; then
+	cp -f /etc/sysconfig/splash,{.rpmnew}
+	mv -f /etc/sysconfig/{fbsplash.rpmsave,splash}
 fi
 
 %files
