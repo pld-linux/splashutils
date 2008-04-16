@@ -1,0 +1,32 @@
+--- splashutils-1.5.4/Makefile.am~	2008-02-25 21:41:35.000000000 +0200
++++ splashutils-1.5.4/Makefile.am	2008-04-16 02:30:05.999841930 +0300
+@@ -1,4 +1,4 @@
+-SUBDIRS = libs src docs misc scripts
++SUBDIRS = src docs misc scripts
+ 
+ include common.mk
+ 
+--- splashutils-1.5.4/src/Makefile.am~	2008-04-16 03:02:01.179840618 +0300
++++ splashutils-1.5.4/src/Makefile.am	2008-04-16 03:02:06.179841730 +0300
+@@ -233,16 +233,15 @@
+ fbcondecor_helper_CFLAGS    = -Os -w -ffunction-sections -fdata-sections -I.@am__isrc@
+ fbcondecor_helper_LDFLAGS   = 
+ fbcondecor_helper_LDADD     = 
+-fbcondecor_helper_CFLAGS   += -I$(abs_top_builddir)/libs/libjpeg -I$(LIBJPEG_SOURCE)
+-fbcondecor_helper_LDADD    += $(top_builddir)/libs/libjpeg.a
++fbcondecor_helper_LDADD    += -ljpeg
+ if CONFIG_PNG
+-fbcondecor_helper_CFLAGS   += -I$(LIBPNG_SOURCE)
+-fbcondecor_helper_LDADD    += $(top_builddir)/libs/libpng.a $(top_builddir)/libs/libz.a
++fbcondecor_helper_LDADD    += -lpng -lz
+ endif
+ if CONFIG_TTF_KERNEL
+ fbcondecor_helper_SOURCES  += ttf.c ttf.h fbsplash.h
+-fbcondecor_helper_CFLAGS   += -I$(LIBFREETYPE2_SOURCE)/include -I$(LIBZ_SOURCE)
+-fbcondecor_helper_LDADD    += $(top_builddir)/libs/libfreetype.a
++fbcondecor_helper_CFLAGS   += -I/usr/include/freetype2
++fbcondecor_helper_CFLAGS   += -I/usr/include
++fbcondecor_helper_LDADD    += -lfreetype
+ endif
+ if CONFIG_KLIBC_SHARED
+ fbcondecor_helper_LDFLAGS  += -shared
