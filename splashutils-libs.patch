@@ -6,12 +6,9 @@
  
  include common.mk
  
---- splashutils-1.5.4/src/Makefile.am~	2008-04-16 03:02:01.179840618 +0300
-+++ splashutils-1.5.4/src/Makefile.am	2008-04-16 03:02:06.179841730 +0300
-@@ -233,16 +233,15 @@
- fbcondecor_helper_CFLAGS    = -Os -w -ffunction-sections -fdata-sections -I.@am__isrc@
- fbcondecor_helper_LDFLAGS   = 
- fbcondecor_helper_LDADD     = 
+--- splashutils-1.5.4/src/Makefile.am	2008-04-16 03:02:06.179841730 +0300
++++ splashutils-1.5.4/src/Makefile.am	2008-04-16 16:55:34.161432745 +0300
+@@ -236,40 +236,15 @@
 -fbcondecor_helper_CFLAGS   += -I$(abs_top_builddir)/libs/libjpeg -I$(LIBJPEG_SOURCE)
 -fbcondecor_helper_LDADD    += $(top_builddir)/libs/libjpeg.a
 +fbcondecor_helper_LDADD    += -ljpeg
@@ -30,3 +27,30 @@
  endif
  if CONFIG_KLIBC_SHARED
  fbcondecor_helper_LDFLAGS  += -shared
+ else
+ fbcondecor_helper_LDFLAGS  += -static
+ endif
+-
+-# Override automake's generation of target rules for building fbcondecor_helper.
+-fbcondecor_helper: $(fbcondecor_helper_LDADD) $(fbcondecor_helper_OBJECTS)
+-	@$(call infmsg,LD,$@)
+-	$(Q)$(MKDIR_P) $(@D)
+-	$(Q)$(KLCC) $(fbcondecor_helper_CFLAGS) $(fbcondecor_helper_LDFLAGS) $+ $(fbcondecor_helper_LDADD) -o $@
+-	$(Q)$(STRIP) $@
+-
+-# Override automake's generation of target rules for building fbcondecor_helper object files.
+-fbcondecor_helper-kernel.o:
+-fbcondecor_helper-libfbsplash.o:
+-fbcondecor_helper-libfbsplashrender.o:
+-fbcondecor_helper-fbcon_decor.o:
+-fbcondecor_helper-common.o:
+-fbcondecor_helper-parse.o:
+-fbcondecor_helper-list.o:
+-fbcondecor_helper-render.o:
+-fbcondecor_helper-image.o:
+-fbcondecor_helper-effects.o:
+-fbcondecor_helper-ttf.o:
+-fbcondecor_helper-%.o: %.c
+-	@$(call infmsg,CC,$@)
+-	$(Q)$(MKDIR_P) $(@D)
+-	$(Q)$(KLCC) $(fbcondecor_helper_CPPFLAGS) $(fbcondecor_helper_CFLAGS) $(INCLUDES) -c $< -o $@
