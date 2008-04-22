@@ -104,7 +104,7 @@ fi
 	--with-ttf \
 	--with-ttf-kernel
 
-%{__make} %{?with_verbose:QUIET=false}
+%{__make} -j1 %{?with_verbose:QUIET=false}
 
 %{__make} install DESTDIR=`pwd`/klibc
 %{__make} clean
@@ -122,7 +122,7 @@ fi
 	--with-ttf \
 	--with-ttf-kernel
 
-%{__make} %{?with_verbose:QUIET=false}
+%{__make} -j1 %{?with_verbose:QUIET=false}
 
 %install
 rm -rf $RPM_BUILD_ROOT
