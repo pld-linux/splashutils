@@ -1,0 +1,11 @@
+--- splashutils-1.5.4/scripts/splash_geninitramfs.in~	2008-02-25 21:41:35.000000000 +0200
++++ splashutils-1.5.4/scripts/splash_geninitramfs.in	2008-04-22 19:51:31.133178577 +0300
+@@ -167,7 +167,7 @@
+ 
+ printv "o Copying ${splash_hlp}.."
+ cp "${splash_hlp}" "${imgdir}@sbindir@"
+-ln -sf "${splash_hlp}" "${imgdir}@sbindir@/splash_helper"
++ln -sf "$(basename "${splash_hlp}")" "${imgdir}@sbindir@/splash_helper"
+ 
+ res=${res//,/ }
+ 

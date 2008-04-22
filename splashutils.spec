@@ -16,6 +16,7 @@ Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-libs.patch
 Patch1:		%{name}-configpath.patch
+Patch2:		%{name}-relpath.patch
 #Patch0: %{name}-makefile.patch # in -libs now
 #Patch1: %{name}-compile.patch
 #Patch2: %{name}-pld-paths.patch
@@ -75,6 +76,7 @@ Static splashutils libraries
 %setup -q %{?notyet:-a1}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 #%patch0 -p0
 #%patch1 -p0
