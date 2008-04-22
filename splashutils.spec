@@ -15,6 +15,7 @@ Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{ver
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Patch0:		%{name}-libs.patch
+Patch1:		%{name}-configpath.patch
 #Patch0: %{name}-makefile.patch # in -libs now
 #Patch1: %{name}-compile.patch
 #Patch2: %{name}-pld-paths.patch
@@ -73,6 +74,8 @@ Static splashutils libraries
 %prep
 %setup -q %{?notyet:-a1}
 %patch0 -p1
+%patch1 -p1
+
 #%patch0 -p0
 #%patch1 -p0
 #%patch2 -p1
