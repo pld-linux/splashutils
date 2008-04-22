@@ -1,10 +1,10 @@
---- splashutils-1.5.4/scripts/splash-functions.sh~	2008-04-22 18:58:14.000000000 +0300
-+++ splashutils-1.5.4/scripts/splash-functions.sh	2008-04-22 19:39:11.791167143 +0300
+--- splashutils-1.5.4/scripts/splash-functions.sh.in~	2008-04-22 18:58:14.000000000 +0300
++++ splashutils-1.5.4/scripts/splash-functions.sh.in	2008-04-22 19:39:11.791167143 +0300
 @@ -130,6 +130,7 @@
- 	[ -f /etc/splash/splash ] && . /etc/splash/splash
- 	[ -f /etc/conf.d/splash ] && . /etc/conf.d/splash
- 	[ -f /etc/conf.d/fbcondecor ] && . /etc/conf.d/fbcondecor
-+	[ -f /etc/sysconfig/splash ] && . /etc/sysconfig/splash
+ 	[ -f @sysconfdir@/splash/splash ] && . @sysconfdir@/splash/splash
+ 	[ -f @sysconfdir@/conf.d/splash ] && . @sysconfdir@/conf.d/splash
+ 	[ -f @sysconfdir@/conf.d/fbcondecor ] && . @sysconfdir@/conf.d/fbcondecor
++	[ -f @sysconfdir@/sysconfig/splash ] && . @sysconfdir@/sysconfig/splash
  
  	if [ -f /proc/cmdline ]; then
  		options=$(grep -o 'splash=[^ ]*' /proc/cmdline)
