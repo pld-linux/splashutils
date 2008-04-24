@@ -40,9 +40,18 @@ start() {
 					done
 				fi
 
-				/sbin/splash_util --vc="$TTY" -m v -t "$theme" -c setcfg 2>/dev/null
-				[ "${TTY}" -eq 0 ] && /sbin/splash_util --vc=0 -m v -t "$theme" -c setpic
-				/sbin/splash_util --vc="$TTY" -c on 2>/dev/null
+				case "$engine" in
+				fbcondecor)
+					tool=fbcondecor_ctl
+					;;
+				*)
+					tool=splash_util
+					;;
+				esac
+
+				$tool --vc="$TTY" v -t "$theme" -c setcfg
+				[ "${TTY}" -eq 0 ] && $tool --vc=0 -m v -t "$theme" -c setpic
+				$tool --vc="$TTY" -c on
 			done
 			ok
 		done
