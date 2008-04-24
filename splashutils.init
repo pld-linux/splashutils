@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# fbsplash	fbsplashed console
+# splash	splashed console
 #
 # chkconfig:	345 98 98
 #
-# description:	Activate fbsplashed consoles
+# description:	Activate splashed consoles
 #
 # $Id$
 
@@ -13,49 +13,50 @@
 . /etc/rc.d/init.d/functions
 
 # Set defaults
-RES="`/usr/bin/fbres`"
+RES=$(/usr/bin/fbres)
 
 # Get service config - may override defaults
-[ -f /etc/sysconfig/fbsplash ] && . /etc/sysconfig/fbsplash
+[ -f /etc/sysconfig/splash ] && . /etc/sysconfig/splash
 
-test -z "${SPLASH_THEME}" && SPLASH_THEME="default"
-test -z "${SPLASH_TTYS}" && SPLASH_TTYS="0 1 2 3 4 5 6 7"
+test -z "$SPLASH_THEME" && SPLASH_THEME="default"
+test -z "$SPLASH_TTYS" && SPLASH_TTYS="0 1 2 3 4 5 6 7"
 
 start() {
 	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/fbsplash ]; then
-		if [ -e /dev/fbsplash ] && [ -e /proc/sys/kernel/fbsplash ] && [ -f /etc/splash/${SPLASH_THEME}/${RES}.cfg ]; then
+	if [ ! -f /var/lock/subsys/splash ]; then
+		for engine in fbcondecor fbsplash; do
+			if [ ! -e /dev/$engine ] || [ ! -e /proc/sys/kernel/$engine ] || [ ! -f /etc/splash/$SPLASH_THEME/$RES.cfg ]; then
+				continue
+			fi
 			show "Setting framebuffer console images for theme '%s'" $SPLASH_THEME; busy
-			for TTY in ${SPLASH_TTYS}; do
-				theme="${SPLASH_THEME}"
+			for TTY in $SPLASH_TTYS; do
+				theme=$SPLASH_THEME
 
-				if [ -n "${SPLASH_TTY_MAP}" ]; then
-					for i in ${SPLASH_TTY_MAP}; do
-						if [ "${i%:*}" = "${TTY}" ]; then
+				if [ -n "$SPLASH_TTY_MAP" ]; then
+					for i in $SPLASH_TTY_MAP; do
+						if [ "${i%:*}" = "$TTY" ]; then
 							theme="${i#*:}"
 						fi
 					done
-
 				fi
 
-				/sbin/splash_util --vc="${TTY}" -m v -t "${theme}" -c setcfg 2>/dev/null
-				[ "${TTY}" -eq 0 ] && /sbin/splash_util --vc=0 -m v -t "${theme}" -c setpic
-				/sbin/splash_util --vc="${TTY}" -c on 2>/dev/null
-
+				/sbin/splash_util --vc="$TTY" -m v -t "$theme" -c setcfg 2>/dev/null
+				[ "${TTY}" -eq 0 ] && /sbin/splash_util --vc=0 -m v -t "$theme" -c setpic
+				/sbin/splash_util --vc="$TTY" -c on 2>/dev/null
 			done
 			ok
-			touch /var/lock/subsys/fbsplash
-		fi
+		done
+		touch /var/lock/subsys/splash
 	else
-		msg_already_running fbsplash
+		msg_already_running splash
 	fi
 }
 
 stop() {
-	if [ -f /var/lock/subsys/fbsplash ]; then
-		rm -f /var/lock/subsys/fbsplash
+	if [ -f /var/lock/subsys/splash ]; then
+		rm -f /var/lock/subsys/splash
 	else
-		msg_not_running fbsplash
+		msg_not_running splash
 	fi
 }
 
