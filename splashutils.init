@@ -18,47 +18,50 @@ RES=$(/usr/bin/fbres)
 # Get service config - may override defaults
 [ -f /etc/sysconfig/splash ] && . /etc/sysconfig/splash
 
-test -z "$SPLASH_THEME" && SPLASH_THEME="default"
-test -z "$SPLASH_TTYS" && SPLASH_TTYS="0 1 2 3 4 5 6 7"
-
 start() {
 	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/splash ]; then
-		for engine in fbcondecor fbsplash; do
-			if [ ! -e /dev/$engine ] || [ ! -e /proc/sys/kernel/$engine ] || [ ! -f /etc/splash/$SPLASH_THEME/$RES.cfg ]; then
-				continue
-			fi
-			show "Setting framebuffer console images for theme '%s'" $SPLASH_THEME; busy
-			for TTY in $SPLASH_TTYS; do
-				theme=$SPLASH_THEME
-
-				if [ -n "$SPLASH_TTY_MAP" ]; then
-					for i in $SPLASH_TTY_MAP; do
-						if [ "${i%:*}" = "$TTY" ]; then
-							theme="${i#*:}"
-						fi
-					done
-				fi
-
-				case "$engine" in
-				fbcondecor)
-					tool=fbcondecor_ctl
-					;;
-				*)
-					tool=splash_util
-					;;
-				esac
-
-				$tool --vc="$TTY" v -t "$theme" -c setcfg
-				[ "${TTY}" -eq 0 ] && $tool --vc=0 -m v -t "$theme" -c setpic
-				$tool --vc="$TTY" -c on
-			done
-			ok
-		done
-		touch /var/lock/subsys/splash
-	else
+	if [ -f /var/lock/subsys/splash ]; then
 		msg_already_running splash
+		return
 	fi
+
+	# if fbcondecor not initialized, exit
+	if [ ! -e /dev/fbcondecor ] || [ ! -e /proc/sys/kernel/fbcondecor ]; then
+		return
+	fi
+
+	[ "$SPLASH_THEME" ] || SPLASH_THEME="default"
+
+	# no theme or no resolution for this theme, exit too
+	if [ ! -f /etc/splash/$SPLASH_THEME/$RES.cfg ]; then
+		return
+	fi
+
+	if [ -z "$SPLASH_TTYS" -a -d /sys/class/vc ]; then
+		SPLASH_TTYS=$(ls -d /sys/class/vc/vcsa* | awk '{print substr($0, length("/sys/class/vc/vcsa") + 1)}')
+	fi
+	if [ -z "$SPLASH_TTYS" ]; then
+		SPLASH_TTYS=$(awk -F: '/^[0-9]*:/{print $1}' /etc/inittab)
+	fi
+
+	show "Setting framebuffer console images for theme '%s'" $SPLASH_THEME; busy
+	for TTY in $SPLASH_TTYS; do
+		theme=$SPLASH_THEME
+
+		if [ -n "$SPLASH_TTY_MAP" ]; then
+			for i in $SPLASH_TTY_MAP; do
+				if [ "${i%:*}" = "$TTY" ]; then
+					theme="${i#*:}"
+				fi
+			done
+		fi
+
+		fbcondecor_ctl --vc="$TTY" v -t "$theme" -c setcfg
+		[ "$TTY" -eq 0 ] && fbcondecor_ctl --vc=0 v -t "$theme" -c setpic
+		fbcondecor_ctl --vc="$TTY" -c on
+	done
+	ok
+	touch /var/lock/subsys/splash
 }
 
 stop() {
