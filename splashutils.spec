@@ -8,7 +8,7 @@ Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
 Name:		splashutils
 Version:	1.5.4
-Release:	0.3
+Release:	0.5
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{version}.tar.bz2
@@ -77,9 +77,11 @@ Static splashutils libraries
 
 %prep
 %setup -q -a1
+%if 0
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%endif
 
 #%patch0 -p0
 #%patch1 -p0
@@ -87,12 +89,14 @@ Static splashutils libraries
 
 mv miscsplashutils-* miscsplashutils
 
+%if 0
 mkdir -p nobuild
 mv libs/freetype-* nobuild
 mv libs/jpeg-* nobuild
 mv libs/libpng-* nobuild
 mv libs/zlib-* nobuild
 mv configure{,.dist}
+%endif
 
 %build
 if [ ! -f configure -o configure.ac -nt configure ]; then
@@ -115,6 +119,7 @@ fi
 	--with-ttf \
 	--with-ttf-kernel
 
+%if 0
 cd src
 %{__make} \
 	fbcondecor_helper
@@ -123,14 +128,18 @@ cd src
 # relink. as libtool discarded -static
 %{__cc} -static -Os -w -ffunction-sections -fdata-sections -I. -I/usr/include/freetype2 -I/usr/include -O2 -fno-strict-aliasing -fwrapv -march=i686 -mtune=pentium4 -gdwarf-2 -g2 -Wl,--as-needed -Wl,-z -Wl,relro -Wl,-z -Wl,-combreloc -o fbcondecor_helper fbcondecor_helper-kernel.o fbcondecor_helper-libfbsplash.o fbcondecor_helper-libfbsplashrender.o fbcondecor_helper-fbcon_decor.o fbcondecor_helper-common.o fbcondecor_helper-parse.o fbcondecor_helper-list.o fbcondecor_helper-render.o fbcondecor_helper-image.o fbcondecor_helper-effects.o fbcondecor_helper-ttf.o  -ljpeg -lpng -lfreetype -lz -lm
 cd ..
+%endif
 
 %{__make} -j1 \
 	%{?with_verbose:QUIET=false}
 
+%if 0
 %{__make} install DESTDIR=$(pwd)/initrd
 %{__make} clean
 %endif
+%endif
 
+%if 0
 # build shared for system
 %configure \
 	--enable-klibc-shared \
@@ -145,6 +154,7 @@ cd ..
 
 %{__make} -j1 \
 	%{?with_verbose:QUIET=false}
+%endif
 
 %{__make} -C miscsplashutils \
 	CC="%{__cc}" \
@@ -162,8 +172,8 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig
 install miscsplashutils/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_BUILD_ROOT%{_bindir}
 
 %if %{with initrd}
-install -d $RPM_BUILD_ROOT%{_libdir}/initrd
-install initrd/sbin/fbcondecor_helper $RPM_BUILD_ROOT%{_libdir}/initrd
+#install -d $RPM_BUILD_ROOT%{_libdir}/initrd
+#install initrd/sbin/fbcondecor_helper $RPM_BUILD_ROOT%{_libdir}/initrd
 %endif
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/splash
@@ -222,8 +232,8 @@ fi
 %dir /var/run/splashutils
 
 # for initrd
-%dir %{_libdir}/initrd
-%{_libdir}/initrd/fbcondecor_helper
+#%dir %{_libdir}/initrd
+#%{_libdir}/initrd/fbcondecor_helper
 
 %files devel
 %defattr(644,root,root,755)
