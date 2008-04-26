@@ -1,5 +1,14 @@
---- splashutils-1.5.4/scripts/splash_geninitramfs.in~	2008-02-25 21:41:35.000000000 +0200
-+++ splashutils-1.5.4/scripts/splash_geninitramfs.in	2008-04-22 19:51:31.133178577 +0300
+--- splashutils-1.5.4/scripts/splash_geninitramfs.in	2008-04-22 19:51:31.133178577 +0300
++++ splashutils-1.5.4/scripts/splash_geninitramfs.in	2008-04-26 21:55:09.000000000 +0300
+@@ -96,7 +96,7 @@
+ 					if [ ! -d "$i" ] ; then
+ 						continue
+ 					fi
+-					themes[$index]="`basename "$i"`"
++					themes[$index]=$(basename "$i")
+ 					let "index++"
+ 				done;;
+ 	esac
 @@ -167,7 +167,7 @@
  
  printv "o Copying ${splash_hlp}.."
