@@ -1,6 +1,6 @@
 # Config file for splashutils
 
-# fbsplash enabled?
+# splash enabled?
 #FB_SPLASH="yes"
 
 # a theme to use, probably best left commented (the theme specified
@@ -10,7 +10,7 @@
 # a spaced separated resolutions list to support at boot time
 #FB_SPLASH_RESOLUTIONS="1024x768"
 
-# on which ttys should fbsplash be enabled?
+# on which ttys should splash be enabled?
 # you should list all tty's but console where kdm/gdm runs
 # defaults to auto scanning from /sys
 #SPLASH_TTYS="0 1 2 3 4 5 6 7"
