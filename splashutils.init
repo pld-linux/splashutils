@@ -18,6 +18,23 @@ RES=$(/usr/bin/fbres)
 # Get service config - may override defaults
 [ -f /etc/sysconfig/splash ] && . /etc/sysconfig/splash
 
+set_theme() {
+	local vc=$1
+	local theme=$2
+
+	out=$(fbcondecor_ctl --vc=$vc -t "$theme" -c setcfg 2>&1)
+	rc=$?
+	[ $rc = 0 ] || return $rc
+	[ "$out" ] && return 1
+
+	if [ $vc = 0 ]; then
+		fbcondecor_ctl --vc=$vc -t "$theme" -c setpic
+	fi
+
+	fbcondecor_ctl --vc=$vc -c on
+	return $?
+}
+
 start() {
 	# Check if the service is already running?
 	if [ -f /var/lock/subsys/splash ]; then
@@ -38,13 +55,13 @@ start() {
 	fi
 
 	if [ -z "$SPLASH_TTYS" -a -d /sys/class/vc ]; then
-		SPLASH_TTYS=$(ls -d /sys/class/vc/vcsa* | awk '{print substr($0, length("/sys/class/vc/vcsa") + 1)}')
+		SPLASH_TTYS=$(ls -dv /sys/class/vc/vcsa* | awk '{printf("%d\n", substr($0, length("/sys/class/vc/vcsa") + 1))}')
 	fi
 	if [ -z "$SPLASH_TTYS" ]; then
 		SPLASH_TTYS=$(awk -F: '/^[0-9]*:/{print $1}' /etc/inittab)
 	fi
 
-	show "Setting framebuffer console images for theme '%s'" $SPLASH_THEME; busy
+	show "Setting framebuffer console images"; echo
 	for TTY in $SPLASH_TTYS; do
 		theme=$SPLASH_THEME
 
@@ -56,11 +73,14 @@ start() {
 			done
 		fi
 
-		fbcondecor_ctl --vc="$TTY" v -t "$theme" -c setcfg 2>/dev/null
-		[ "$TTY" -eq 0 ] && fbcondecor_ctl --vc=0 v -t "$theme" -c setpic
-		fbcondecor_ctl --vc="$TTY" -c on 2>/dev/null
+		show " console %d: theme: '%s'" $TTY "$theme"
+		set_theme $TTY "$theme"
+		if [ $? = 0 ]; then
+			ok
+		else
+			fail
+		fi
 	done
-	ok
 	touch /var/lock/subsys/splash
 }
 
