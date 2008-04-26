@@ -56,9 +56,9 @@ start() {
 			done
 		fi
 
-		fbcondecor_ctl --vc="$TTY" v -t "$theme" -c setcfg
+		fbcondecor_ctl --vc="$TTY" v -t "$theme" -c setcfg 2>/dev/null
 		[ "$TTY" -eq 0 ] && fbcondecor_ctl --vc=0 v -t "$theme" -c setpic
-		fbcondecor_ctl --vc="$TTY" -c on
+		fbcondecor_ctl --vc="$TTY" -c on 2>/dev/null
 	done
 	ok
 	touch /var/lock/subsys/splash
