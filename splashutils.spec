@@ -197,7 +197,7 @@ fi
 %triggerpostun -- %{name} < 1.5.4-0.2
 # migrate from apache-config macros
 if [ -f /etc/sysconfig/fbsplash.rpmsave ]; then
-	cp -f /etc/sysconfig/splash,{.rpmnew}
+	cp -f /etc/sysconfig/splash{,.rpmnew}
 	mv -f /etc/sysconfig/{fbsplash.rpmsave,splash}
 fi
 
