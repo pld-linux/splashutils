@@ -126,7 +126,7 @@ cd src
 	%{?with_verbose:QUIET=false}
 
 # relink. as libtool discarded -static
-%{__cc} -static -Os -w -ffunction-sections -fdata-sections -I. -I/usr/include/freetype2 -I/usr/include -O2 -fno-strict-aliasing -fwrapv -march=i686 -mtune=pentium4 -gdwarf-2 -g2 -Wl,--as-needed -Wl,-z -Wl,relro -Wl,-z -Wl,-combreloc -o fbcondecor_helper fbcondecor_helper-kernel.o fbcondecor_helper-libfbsplash.o fbcondecor_helper-libfbsplashrender.o fbcondecor_helper-fbcon_decor.o fbcondecor_helper-common.o fbcondecor_helper-parse.o fbcondecor_helper-list.o fbcondecor_helper-render.o fbcondecor_helper-image.o fbcondecor_helper-effects.o fbcondecor_helper-ttf.o  -ljpeg -lpng -lfreetype -lz -lm
+%{__cc} -static -Os -w -ffunction-sections -fdata-sections -I. -I/usr/include/freetype2 -I/usr/include -O2 -fno-strict-aliasing -fwrapv -march=i686 -mtune=pentium4 -gdwarf-2 -g2 -Wl,--as-needed -Wl,-z -Wl,relro -Wl,-z -Wl,combreloc -o fbcondecor_helper fbcondecor_helper-kernel.o fbcondecor_helper-libfbsplash.o fbcondecor_helper-libfbsplashrender.o fbcondecor_helper-fbcon_decor.o fbcondecor_helper-common.o fbcondecor_helper-parse.o fbcondecor_helper-list.o fbcondecor_helper-render.o fbcondecor_helper-image.o fbcondecor_helper-effects.o fbcondecor_helper-ttf.o  -ljpeg -lpng -lfreetype -lz -lm
 cd ..
 %endif
 
