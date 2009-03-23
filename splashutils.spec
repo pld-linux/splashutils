@@ -232,7 +232,6 @@ fi
 %dir /var/run/splashutils
 
 # for initrd
-#%dir %{_libdir}/initrd
 #%{_libdir}/initrd/fbcondecor_helper
 
 %files devel
