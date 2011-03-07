@@ -167,6 +167,7 @@ cd ..
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig} \
 	    $RPM_BUILD_ROOT/var/run/%{name}
+install -d $RPM_BUILD_ROOT/lib/splash/cache
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -223,6 +224,7 @@ fi
 %attr(755,root,root) %{_sbindir}/fbcondecor_ctl
 %attr(755,root,root) %{_sbindir}/fbsplashd
 %attr(755,root,root) %{_sbindir}/splash_geninitramfs
+%dir /lib/splash/cache
 
 %attr(755,root,root) %{_libdir}/libfbsplash.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libfbsplash.so.1
