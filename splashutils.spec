@@ -224,6 +224,7 @@ fi
 %attr(755,root,root) %{_sbindir}/fbcondecor_ctl
 %attr(755,root,root) %{_sbindir}/fbsplashd
 %attr(755,root,root) %{_sbindir}/splash_geninitramfs
+%dir /lib/splash
 %dir /lib/splash/cache
 
 %attr(755,root,root) %{_libdir}/libfbsplash.so.*.*.*
