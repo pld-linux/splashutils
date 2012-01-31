@@ -54,3 +54,14 @@
 -	@$(call infmsg,CC,$@)
 -	$(Q)$(MKDIR_P) $(@D)
 -	$(Q)$(KLCC) $(fbcondecor_helper_CPPFLAGS) $(fbcondecor_helper_CFLAGS) $(INCLUDES) -c $< -o $@
+--- splashutils-1.5.4.3/miscsplashutils/fbtruetype/Makefile~	2006-02-03 16:10:41.000000000 +0100
++++ splashutils-1.5.4.3/miscsplashutils/fbtruetype/Makefile	2012-01-31 21:43:52.329619142 +0100
+@@ -23,7 +23,7 @@
+ OBJECTS  = fbtruetype.o messages.o console.o ttf.o luxisri.o
+ 
+ LDFLAGS  =  -L$(LIBDIR)
+-LIBSS    = $(LIBDIR)/libfreetype.a $(LIBDIR)/libz.a -lm
++LIBSS    = $(LIBDIR)/libfreetype.a $(LIBDIR)/libz.a $(LIBDIR)/libbz2.a -lm
+ LIBSD    = -lfreetype -lm
+ 
+ CFLAGS   = -O2 -Wall -I/usr/include/freetype2
