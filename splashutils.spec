@@ -17,6 +17,7 @@ Source1:	http://dev.gentoo.org/~spock/projects/gensplash/archive/misc%{name}-0.1
 # Source1-md5:	20fc3ed2407edc8cd97623bf7f1c5c7b
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
+Source4:	%{name}.tmpfiles
 Patch0:		%{name}-libs.patch
 Patch1:		%{name}-configpath.patch
 Patch2:		%{name}-relpath.patch
@@ -166,8 +167,9 @@ cd ..
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/splash,/etc/rc.d/init.d,/etc/sysconfig} \
-	    $RPM_BUILD_ROOT/var/run/%{name}
-install -d $RPM_BUILD_ROOT/lib/splash/cache
+	$RPM_BUILD_ROOT/var/run/%{name} \
+	$RPM_BUILD_ROOT/lib/splash/cache \
+	$RPM_BUILD_ROOT/usr/lib/tmpfiles.d
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -181,7 +183,9 @@ install miscsplashutils/{fbres,fbtruetype/{fbtruetype,fbtruetype.static}} $RPM_B
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/splash
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/splash
-rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}
+install %{SOURCE4} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{name}.conf
+
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -235,6 +239,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/splash
 %dir %{_sysconfdir}/splash
 %dir /var/run/splashutils
+/usr/lib/tmpfiles.d/%{name}.conf
 
 # for initrd
 #%{_libdir}/initrd/fbcondecor_helper
