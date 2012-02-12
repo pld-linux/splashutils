@@ -8,7 +8,7 @@ Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
 Name:		splashutils
 Version:	1.5.4.3
-Release:	4
+Release:	5
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{version}.tar.bz2
