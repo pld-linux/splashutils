@@ -8,7 +8,7 @@ Summary:	Utilities for setting splash
 Summary(pl.UTF-8):	Narzędzia do ustawiania splash
 Name:		splashutils
 Version:	1.5.4.3
-Release:	7
+Release:	8
 License:	GPL
 Group:		Applications/System
 Source0:	http://dev.gentoo.org/~spock/projects/splashutils/archive/%{name}-%{version}.tar.bz2
@@ -23,6 +23,8 @@ Patch1:		%{name}-configpath.patch
 Patch2:		%{name}-relpath.patch
 Patch3:		%{name}-libpng15.patch
 Patch4:		%{name}-miscsplashutils-fbtruetype.patch
+Patch5:		format-security.patch
+Patch6:		%{name}-link.patch
 #Patch0: %{name}-makefile.patch # in -libs now
 #Patch1: %{name}-compile.patch
 #Patch2: %{name}-pld-paths.patch
@@ -91,6 +93,8 @@ mv miscsplashutils-* miscsplashutils
 %endif
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 #%patch0 -p0
 #%patch1 -p0

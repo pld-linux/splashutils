@@ -1,0 +1,13 @@
+--- splashutils-1.5.4.3/miscsplashutils/fbtruetype/Makefile.orig	2013-11-08 08:31:05.000000000 +0100
++++ splashutils-1.5.4.3/miscsplashutils/fbtruetype/Makefile	2013-11-08 08:34:26.350454460 +0100
+@@ -23,8 +23,8 @@
+ OBJECTS  = fbtruetype.o messages.o console.o ttf.o luxisri.o
+ 
+ LDFLAGS  =  -L$(LIBDIR)
+-LIBSS    = $(LIBDIR)/libfreetype.a $(LIBDIR)/libz.a $(LIBDIR)/libbz2.a -lm
+-LIBSD    = -lfreetype -lm -lbz2
++LIBSS    = $(LIBDIR)/libfreetype.a $(LIBDIR)/libpng.a $(LIBDIR)/libz.a $(LIBDIR)/libbz2.a -lm
++LIBSD    = -lfreetype -lm -lbz2 -lpng -lz
+ 
+ CFLAGS   = -O2 -Wall -I/usr/include/freetype2
+ COMPILE  = $(CC) $(CFLAGS)
