@@ -96,9 +96,9 @@ mv miscsplashutils-* miscsplashutils
 %patch -P5 -p1
 %patch -P6 -p1
 
-#%patch0 -p0
-#%patch1 -p0
-#%patch2 -p1
+#%%patch0 -p0
+#%%patch1 -p0
+#%%patch2 -p1
 
 
 %if 0
